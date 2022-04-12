@@ -24,11 +24,13 @@ class Reversed_WordsUITests: XCTestCase {
 
     func testExample() throws {
         // UI tests must launch the application that they test.
+        let sentence = "tseT gnirts"
         let app = XCUIApplication()
         app.launch()
         app.textFields["Print smth..."].tap()
         app.textFields["Print smth..."].typeText("Test string")
         app.buttons["Reverse"].tap()
+        XCTAssertEqual(sentence, "tseT gnirts")
         // Use recording to get started writing UI tests.
         // Use XCTAssert and related functions to verify your tests produce the correct results.
     }
