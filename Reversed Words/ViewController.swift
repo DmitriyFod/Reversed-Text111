@@ -21,53 +21,122 @@ class ViewController: UIViewController {
         appearTextFld.frame = CGRect(x: 60, y: 320, width: 255, height: 34)
         appearTextFld.placeholder = "Text to ignore"
         self.view.addSubview(appearLabel)
-        
+
     }
+    enum segments: Int{
+        case Default = 0
+        case Custom = 1
+    }
+    @IBOutlet weak var segmentControllOutlet: UISegmentedControl!
     @IBAction func segmentConroll(_ sender: UISegmentedControl) {
-        if sender.selectedSegmentIndex == 0 {
+        switch segmentControllOutlet.selectedSegmentIndex {
+        case segments.Default.rawValue:
             self.view.addSubview(appearLabel)
             appearTextFld.removeFromSuperview()
-        }
-        else if sender.selectedSegmentIndex == 1 {
+        case segments.Custom.rawValue:
             self.view.addSubview(appearTextFld)
             appearLabel.removeFromSuperview()
+        default:
+            self.view.addSubview(appearLabel)
         }
-    }
-    @IBOutlet weak var InputText: UITextField!
+        }
+    @IBOutlet weak var inputText: UITextField!
     @IBOutlet weak var resultLabel: UILabel!
     @IBOutlet weak var reverseButton: UIButton!
-    @IBAction func ReverseButtonPressed(_ sender: Any) {
-        resultLabel.text = reversedWords(sentence: InputText.text!)
+    @IBAction func reverseButtonPressed(_ sender: Any) {
+        resultLabel.text = reversedWords(sentence: inputText.text!)
     }
-    func reversedWords (sentence: String) ->String{
-        var newSentence = ""
-        let allWords = InputText.text!.components(separatedBy: " ")
-        if appearTextFld.text == ""{
-        for word in allWords{
-            if newSentence != ""{
-                newSentence += " "
-            }
-            let reverseWord = String(word.reversed())
-            newSentence += reverseWord
-        }
-        }else if appearTextFld.text != "" && allWords.contains(appearTextFld.text!){
-            for word in allWords{
-                if word != appearTextFld.text!{
-                    if newSentence != ""{
-                        newSentence += " "
-                    }
-                    let reverseWord = String(word.reversed())
-                    newSentence += reverseWord
-                }else{
-                    newSentence += " "
-                    newSentence += appearTextFld.text!
-                }
-                }
-        }
-        return newSentence
-    }
+    func reversedWords (sentence: String)-> String {
+        let excludedWord = appearTextFld.text!
+        var resultText = sentence.components(separatedBy: " ") // розділяємо на слова
+            .map { str -> String in
+                        guard str != excludedWord else { return str } // якщо це слвиключення лишаємо цого як є
+                        var dict = [(Range<String.Index>, Character)]() // це сюди записуємо позицію символа який треба виключити і сам символ
+                let arr = str.split { ch in
+                    if segmentControllOutlet.selectedSegmentIndex == 1{// якщо не буква – виключення
+                        for character in excludedWord {
+                            if ch == character {
+                                        let range = str.range(of: String(ch))!
+                                        dict.append((range,ch))
+                                        return true
+                                    }
+                                    return false
+                                }
+                        }
+                        let reversed = arr.map({ String($0.reversed()) }) // перевертаємо сабстрінги
+                        var reversedResult = reversed.reversed().joined(separator: "")
+                        for (index, character) in dict { // вставляємо на свої місця виключення
+                            if index.lowerBound >= reversedResult.endIndex {
+                                reversedResult.append(character)
+                            } else {
+                                reversedResult.insert(character, at: index.lowerBound)
+                            }
+                        }
+                        return reversedResult}.joined(separator: " ")
+        return resultText
 }
     
+    
+    
+    
+//        var newSentence = ""
+//        let charSet = CharacterSet(charactersIn: appearTextFld.text!)
+//        let allWords = InputText.text!.components(separatedBy: " ")
+//        if appearTextFld.text == ""{
+//        for word in allWords{
+//            if newSentence != ""{
+//                newSentence += " "
+//            }
+//            let reverseWord = String(word.reversed())
+//            newSentence += reverseWord
+//        }
+//        }else if appearTextFld.text != "" && (allWords.description.rangeOfCharacter(from: charSet) != nil){
+//            for word in allWords{
+//                if word != appearTextFld.text!{
+//                    if newSentence != ""{
+//                        newSentence += " "
+//                    }
+//                    let reverseWord = String(word.reversed())
+//                    newSentence += reverseWord
+//                }else{
+//                    if word.description.rangeOfCharacter(from: charSet) != nil {
+//                        print("YES")
+//
+//                    }
+//                }
+//                }
+//        }
+//        return newSentence
+    
+
+//func reversedWords (sentence: String) ->String{
+//    var newSentence = ""
+//    let allWords = InputText.text!.components(separatedBy: " ")
+//    if appearTextFld.text == ""{
+//    for word in allWords{
+//        if newSentence != ""{
+//            newSentence += " "
+//        }
+//        let reverseWord = String(word.reversed())
+//        newSentence += reverseWord
+//    }
+//    }else if appearTextFld.text != "" && allWords.contains(appearTextFld.text!){
+//        for word in allWords{
+//
+//            if word != appearTextFld.text!{
+//                if newSentence != ""{
+//                    newSentence += " "
+//                }
+//                let reverseWord = String(word.reversed())
+//                newSentence += reverseWord
+//            }else{
+//                newSentence += " "
+//                newSentence += appearTextFld.text!
+//            }
+//            }
+//    }
+//    return newSentence
+//}
 //    func reversing (sentence: String)-> String {
 //        let allWords = InputText.text!.components(separatedBy: " ")
 //        var newSentence = ""
@@ -117,3 +186,4 @@ class ViewController: UIViewController {
 //   }
 //   return String(chars)
 //}
+}
