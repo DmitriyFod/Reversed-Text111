@@ -23,17 +23,17 @@ class ViewController: UIViewController {
         self.view.addSubview(appearLabel)
 
     }
-    enum segments: Int{
-        case Default = 0
-        case Custom = 1
+    enum Segments: Int {
+        case regular = 0
+        case custom = 1
     }
     @IBOutlet weak var segmentControllOutlet: UISegmentedControl!
     @IBAction func segmentConroll(_ sender: UISegmentedControl) {
         switch segmentControllOutlet.selectedSegmentIndex {
-        case segments.Default.rawValue:
+        case Segments.regular.rawValue:
             self.view.addSubview(appearLabel)
             appearTextFld.removeFromSuperview()
-        case segments.Custom.rawValue:
+        case Segments.custom.rawValue:
             self.view.addSubview(appearTextFld)
             appearLabel.removeFromSuperview()
         default:
@@ -47,34 +47,46 @@ class ViewController: UIViewController {
         resultLabel.text = reversedWords(sentence: inputText.text!)
     }
     func reversedWords (sentence: String)-> String {
-        let excludedWord = appearTextFld.text!
-        var resultText = sentence.components(separatedBy: " ") // розділяємо на слова
+        let excludedWord:String? = appearTextFld.text
+        guard let excludedWord = excludedWord else {
+            return "Its nil"
+        }
+        
+        let resultText = sentence.components(separatedBy: " ") // розділяємо на слова
             .map { str -> String in
-                        guard str != excludedWord else { return str } // якщо це слвиключення лишаємо цого як є
-                        var dict = [(Range<String.Index>, Character)]() // це сюди записуємо позицію символа який треба виключити і сам символ
+                guard str != excludedWord else { return str } // якщо це слвиключення лишаємо цого як є
+                var dict = [(Range<String.Index>, Character)]() // це сюди записуємо позицію символа який треба виключити і сам символ
                 let arr = str.split { ch in
-                    if segmentControllOutlet.selectedSegmentIndex == 1{// якщо не буква – виключення
+                    if segmentControllOutlet.selectedSegmentIndex == Segments.custom.rawValue {// якщо не буква – виключення
                         for character in excludedWord {
                             if ch == character {
-                                        let range = str.range(of: String(ch))!
-                                        dict.append((range,ch))
-                                        return true
-                                    }
-                                    return false
-                                }
-                        }
-                        let reversed = arr.map({ String($0.reversed()) }) // перевертаємо сабстрінги
-                        var reversedResult = reversed.reversed().joined(separator: "")
-                        for (index, character) in dict { // вставляємо на свої місця виключення
-                            if index.lowerBound >= reversedResult.endIndex {
-                                reversedResult.append(character)
-                            } else {
-                                reversedResult.insert(character, at: index.lowerBound)
+                                let range = str.range(of: String(ch))!
+                                dict.append((range,ch))
+                                return true
                             }
                         }
-                        return reversedResult}.joined(separator: " ")
+                        return false
+                    } else {
+                        if !ch.isLetter {
+                            let range = str.range(of: String(ch))!
+                            dict.append((range,ch))
+                            return true
+                        }
+                        return false
+                    }
+                }
+                let reversed = arr.map({ String($0.reversed()) }) // перевертаємо сабстрінги
+                var reversedResult = reversed.reversed().joined(separator: "")
+                for (index, character) in dict { // вставляємо на свої місця виключення
+                    if index.lowerBound >= reversedResult.endIndex {
+                        reversedResult.append(character)
+                    } else {
+                        reversedResult.insert(character, at: index.lowerBound)
+                    }
+                }
+                return reversedResult}.joined(separator: " ")
         return resultText
-}
+    }
     
     
     
