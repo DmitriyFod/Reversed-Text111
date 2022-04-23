@@ -8,9 +8,31 @@
 import UIKit
 import Foundation
 
+enum Segments: Int {
+    case regular = 0
+    case custom = 1
+}
 class ViewController: UIViewController {
     var appearLabel = UILabel()
     var appearTextFld = UITextField()
+    @IBOutlet weak var inputText: UITextField!
+    @IBOutlet weak var resultLabel: UILabel!
+    @IBOutlet weak var reverseButton: UIButton!
+    @IBAction func reverseButtonPressed(_ sender: Any) {
+        resultLabel.text = reversedWords(sentence: inputText.text!)
+    }
+    @IBOutlet weak var segmentControllOutlet: UISegmentedControl!
+    @IBAction func segmentConroll(_ sender: UISegmentedControl) {
+        guard let mode = Segments(rawValue: segmentControllOutlet.selectedSegmentIndex) else { return }
+        switch mode {
+        case .regular:
+            self.view.addSubview(appearLabel)
+            appearTextFld.removeFromSuperview()
+        case .custom:
+            self.view.addSubview(appearTextFld)
+            appearLabel.removeFromSuperview()
+        }
+    }
     override func viewDidLoad(){
         super.viewDidLoad()
         resultLabel.layer.borderWidth = 1.0
@@ -21,30 +43,6 @@ class ViewController: UIViewController {
         appearTextFld.frame = CGRect(x: 60, y: 320, width: 255, height: 34)
         appearTextFld.placeholder = "Text to ignore"
         self.view.addSubview(appearLabel)
-
-    }
-    enum Segments: Int {
-        case regular = 0
-        case custom = 1
-    }
-    @IBOutlet weak var segmentControllOutlet: UISegmentedControl!
-    @IBAction func segmentConroll(_ sender: UISegmentedControl) {
-        switch segmentControllOutlet.selectedSegmentIndex {
-        case Segments.regular.rawValue:
-            self.view.addSubview(appearLabel)
-            appearTextFld.removeFromSuperview()
-        case Segments.custom.rawValue:
-            self.view.addSubview(appearTextFld)
-            appearLabel.removeFromSuperview()
-        default:
-            self.view.addSubview(appearLabel)
-        }
-        }
-    @IBOutlet weak var inputText: UITextField!
-    @IBOutlet weak var resultLabel: UILabel!
-    @IBOutlet weak var reverseButton: UIButton!
-    @IBAction func reverseButtonPressed(_ sender: Any) {
-        resultLabel.text = reversedWords(sentence: inputText.text!)
     }
     func reversedWords (sentence: String)-> String {
         let excludedWord:String? = appearTextFld.text
@@ -87,115 +85,4 @@ class ViewController: UIViewController {
                 return reversedResult}.joined(separator: " ")
         return resultText
     }
-    
-    
-    
-    
-//        var newSentence = ""
-//        let charSet = CharacterSet(charactersIn: appearTextFld.text!)
-//        let allWords = InputText.text!.components(separatedBy: " ")
-//        if appearTextFld.text == ""{
-//        for word in allWords{
-//            if newSentence != ""{
-//                newSentence += " "
-//            }
-//            let reverseWord = String(word.reversed())
-//            newSentence += reverseWord
-//        }
-//        }else if appearTextFld.text != "" && (allWords.description.rangeOfCharacter(from: charSet) != nil){
-//            for word in allWords{
-//                if word != appearTextFld.text!{
-//                    if newSentence != ""{
-//                        newSentence += " "
-//                    }
-//                    let reverseWord = String(word.reversed())
-//                    newSentence += reverseWord
-//                }else{
-//                    if word.description.rangeOfCharacter(from: charSet) != nil {
-//                        print("YES")
-//
-//                    }
-//                }
-//                }
-//        }
-//        return newSentence
-    
-
-//func reversedWords (sentence: String) ->String{
-//    var newSentence = ""
-//    let allWords = InputText.text!.components(separatedBy: " ")
-//    if appearTextFld.text == ""{
-//    for word in allWords{
-//        if newSentence != ""{
-//            newSentence += " "
-//        }
-//        let reverseWord = String(word.reversed())
-//        newSentence += reverseWord
-//    }
-//    }else if appearTextFld.text != "" && allWords.contains(appearTextFld.text!){
-//        for word in allWords{
-//
-//            if word != appearTextFld.text!{
-//                if newSentence != ""{
-//                    newSentence += " "
-//                }
-//                let reverseWord = String(word.reversed())
-//                newSentence += reverseWord
-//            }else{
-//                newSentence += " "
-//                newSentence += appearTextFld.text!
-//            }
-//            }
-//    }
-//    return newSentence
-//}
-//    func reversing (sentence: String)-> String {
-//        let allWords = InputText.text!.components(separatedBy: " ")
-//        var newSentence = ""
-//        var chars = Character(appearTextFld.text!)
-//        for index in 0...allWords.count - 1{
-//            let word = allWords[index]
-//            if word.contains(chars) {
-//
-//
-//            if newSentence != "" {
-//                newSentence += " "
-//            }
-//            let reverseWord = String(word.reversed())
-//                newSentence += reverseWord
-//            }
-//
-//        }
-//        return newSentence
-//    }
-//}
-
-
-
-
-
-
-//        if InputText.text!.contains(appearTextFld.text!){
-//            var exceptionWords = appearTextFld.text!
-//            for word in InputText.text!.components(separatedBy: " "){
-//                if newSentence != ""{
-//                    newSentence += " "
-//                }
-//                if exceptionWords != InputText.text{
-//                    let reverseWord = String(word.reversed())
-//                    newSentence += reverseWord
-//                }else{
-//                    newSentence += exceptionWords
-//                }
-//            }
-//        }
-//Reverse String
-//func reverse(str:String)->String{
-//   var chars = [Character]()
-//   for i in (0...str.count).reversed() {
-//      let index = str.index(str.startIndex, offsetBy: i)
-//      chars.append(str[index])
-//   }
-//   return String(chars)
-//}
 }
